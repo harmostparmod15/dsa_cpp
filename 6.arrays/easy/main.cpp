@@ -294,6 +294,114 @@ vector<int> findIntersection(int a[], int b[], int n1, int n2)
     return ans;
 }
 
+int findMissing(int arr[], int n)
+{
+    // brute force -- o(n) S.C = 0(n);
+    // vector<int> temp(n + 1, 0);
+    // for (int i = 0; i < n; i++)
+    // {
+    //     temp[arr[i]] = 1;
+    // }
+    // for (int i = 1; temp.size(); i++)
+    // {
+    //     if (temp[i] == 0)
+    //         return i;
+    // }
+    // return -1;
+
+    // optimal 1  -- o(n) S.C = o(1)
+    // int sum = 0;
+    // for (int i = 0; i < n - 1; i++)
+    // {
+    //     sum += arr[i];
+    // }
+    // int nSum = (n * (n + 1)) / 2;
+    // return nSum - sum;
+
+    // optimal 2  -- o(n) S.C = o(1)
+    int xor1 = 0;
+    int xor2 = 0;
+    for (int i = 0; i < n - 1; i++)
+    {
+        xor2 = xor2 ^ arr[i];
+        xor1 = xor1 ^ (i + 1);
+    }
+    xor1 = xor1 ^ n;
+    return xor1 ^ xor2;
+}
+
+int maxConsecutiveOnes(int arr[], int n)
+{
+    int count = 0;
+    int maxi = -1;
+    for (int i = 0; i < n; i++)
+    {
+
+        if (arr[i] == 1)
+            count++;
+        else
+            count = 0;
+
+        if (count > maxi)
+            maxi = count;
+    }
+
+    return maxi;
+}
+
+int numberOnce(int arr[], int n)
+{
+    // brute force -- o(n) S.C = o(n)
+    // vector<int> hsh(n + 1, 0);
+    // int maxi = arr[0];
+    // for (int i = 0; i < n; i++)
+    // {
+    //     if (arr[i] < maxi)
+    //         maxi = arr[i];
+    // }
+    // for (int i = 0; i < n; i++)
+    //     hsh[arr[i]]++;
+    // for (int i = 0; i < hsh.size(); i++)
+    // {
+    //     if (hsh[i] == 1)
+    //         return i;
+    // }
+    // return -1;
+
+    // optimal -- o(n)  S.C o(1)
+    int xorr = 0;
+    for (int i = 0; i < n; i++)
+    {
+        xorr = xorr ^ arr[i];
+    }
+    return xorr;
+}
+
+int findMaxSub(int arr[], int n, int k)
+{
+    int left = 0;
+    int right = 0;
+    int maxLength = 0;
+    int sum = arr[0];
+    while (right < n)
+    {
+        while (left <= right && sum > k)
+        {
+            sum -= arr[left];
+            left++;
+        }
+        if (sum == k)
+        {
+            maxLength = max(maxLength, right - left + 1);
+        }
+        right++;
+        if (right < n)
+            sum += arr[right];
+    }
+
+    return maxLength;
+}
+
 int main()
 {
     //===========================================================================
@@ -373,9 +481,37 @@ int main()
     // int b[] = {2, 3, 3, 5, 6, 6, 7};
     // int n1 = 8, n2 = 7;
     // vector<int> ans = findIntersection(a, b, n1, n2);
-
     // for (int i = 0; i < ans.size(); i++)
     //     cout << ans[i] << " ";
+
+    //===========================================================================
+    // find the missing number in an array
+    // int arr[] = {1, 2, 4, 5};
+    // int n = 5;
+    // int ans = findMissing(arr, n);
+    // cout << "missing number is  : " << ans << endl;
+
+    //===========================================================================
+    // find the maximum consecutive ones in an array
+    // int arr[] = {1, 1, 0, 1, 1, 1};
+    // int n = 6;
+    // int ans = maxConsecutiveOnes(arr, n);
+    // cout << "maximum consecutvie ones are    : " << ans << endl;
+
+    //===========================================================================
+    // find the number in an array that appears only once
+    // int arr[] = {1, 1, 3, 3, 2, 4, 4};
+    // int n = 7;
+    // int ans = numberOnce(arr, n);
+    // cout << "number appearing once is  : " << ans << endl;
+
+    //===========================================================================
+    // longest  subarray with sum = k
+    // int arr[] = {1, 2, 3, 1, 1, 1, 1};
+    // int n = 7;
+    // int k = 3;
+    // int ans = findMaxSub(arr, n, k);
+    // cout << "max sub-array with sum = " << k << " is of length : " << ans << endl;
 
     return 0;
 }
