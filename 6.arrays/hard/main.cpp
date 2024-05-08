@@ -223,6 +223,90 @@ vector<vector<int>> fourSum(int arr[], int n, int p)
     return ans;
 }
 
+int maxSubArr(int arr[], int n, int k)
+{
+    // brute [ using 3 nested loops ] -- o(n^3)
+
+    // optimal  o(nlogn) -- S.C = o(n)
+    map<int, int> mpp;
+    int maxi = 0;
+    int sum = 0;
+
+    for (int i = 0; i < n; i++)
+    {
+        sum += arr[i];
+        if (sum == 0)
+            maxi = i + 1;
+        else
+        {
+            if (mpp.find(sum) != mpp.end())
+            {
+                maxi = max(maxi, i - mpp[sum]);
+            }
+            else
+            {
+                mpp[sum] = i;
+            }
+        }
+    }
+    return maxi;
+}
+
+int countXor(int arr[], int n, int k)
+{
+
+    // brute -- o(n^2)
+    // int count = 0;
+    // for (int i = 0; i < n; i++)
+    // {
+    //     int xxor = 0;
+    //     for (int j = i; j < n; j++)
+    //     {
+    //         xxor = xxor ^ arr[j];
+    //         if (xxor == k)
+    //             count++;
+    //     }
+    //     }
+    // return count;
+
+    // optimal -- o(n) -- S.C = o(n)
+    int count = 0;
+    int xr = 0;
+    map<int, int> mpp;
+    mpp[xr]++;
+    for (int i = 0; i < n; i++)
+    {
+        xr = xr ^ arr[i];
+        int x = xr ^ k;
+        count += mpp[x];
+        mpp[xr]++;
+    }
+
+    return count;
+}
+
+vector<vector<int>> mergeOlppingInterval(vector<vector<int>> arr)
+{
+    // o(nlogn) -- S.C = o(n)
+    int n = arr.size();
+    sort(arr.begin(), arr.end());
+    vector<vector<int>> ans;
+
+    for (int i = 0; i < n; i++)
+    {
+        if (ans.empty() || arr[i][0] > ans.back()[1])
+        {
+            ans.push_back(arr[i]);
+        }
+        else
+        {
+            ans.back()[1] = max(ans.back()[1], arr[i][1]);
+        }
+    }
+
+    return ans;
+}
+
 int main()
 {
     // ====================================================================================
@@ -263,5 +347,31 @@ int main()
     // int p = 5;
     // vector<vector<int>> ans = tripleSum(arr, n, p);
 
-     return 0;
+    // ====================================================================================
+    // maximum sub-array
+    // int arr[] = {1, -1, 3, 2, -2, -8, 1, 7, 10, 23};
+    // int k = 0;
+    // int n = 10;
+    // int ans = maxSubArr(arr, n, k);
+    // cout << "ans : " << ans << endl;
+
+    // ====================================================================================
+    // count sub-array with XOR as k
+    // int arr[] = {4, 2, 2, 6, 4};
+    // int n = 5;
+    // int k = 6;
+    // int ans = countXor(arr, n, k);
+    // cout << "ans : " << ans << endl;
+
+    // ====================================================================================
+    // merge overlapping intervals
+    // vector<vector<int>> arr = {{1, 3}, {2, 4}, {2, 6}, {8, 9}, {8, 10}, {9, 11}};
+    // vector<vector<int>> ans =  mergeOlppingInterval(arr);
+    // for(int i=0;i<ans.size();i++){
+    //     for(int j=0;j<ans[i].size();j++){
+    //         cout<<ans[i][j]<<" ";
+    //     }
+    // }
+
+    return 0;
 }
