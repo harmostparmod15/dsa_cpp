@@ -307,6 +307,251 @@ vector<vector<int>> mergeOlppingInterval(vector<vector<int>> arr)
     return ans;
 }
 
+void mergeArr(int arr[], int brr[], int n1, int n2)
+{
+    // brute -- o(n+m) -- S.C = o(n+m)
+    // int i = 0;
+    // int j = 0;
+    // vector<int> tmp;
+    // // merging both arrays
+    // while (i < n1 && j < n2)
+    // {
+    //     if (arr[i] <= brr[j])
+    //     {
+    //         tmp.push_back(arr[i]);
+    //         i++;
+    //     }
+    //     else
+    //     {
+    //         tmp.push_back(brr[j]);
+    //         j++;
+    //     }
+    // }
+    // if (i < n1)
+    // {
+    //     while (i < n1)
+    //     {
+    //         tmp.push_back(arr[i]);
+    //         i++;
+    //     }
+    // }
+    // if (j < n2)
+    // {
+    //     while (j < n2)
+    //     {
+    //         tmp.push_back(brr[j]);
+    //         j++;
+    //     }
+    // }
+    // inserting back in 1st array
+    // for (int i = 0; i < n1; i++)
+    // {
+    //     arr[i] = tmp[i];
+    // }
+    // // inserting back in 2nd array
+    // for (int j = 0; j < n2; j++)
+    // {
+    //     brr[j] = tmp[n1 + j];
+    // }
+
+    // optimal 1 -- o( nlogn + mlogm ) -- S.C = o(1)
+    int i = n1 - 1;
+    int j = 0;
+    while (arr[i] >= brr[j])
+    {
+        swap(arr[i], brr[j]);
+        i--;
+        j++;
+    }
+
+    sort(arr + 0, arr + n1);
+    sort(brr + 0, brr + n2);
+}
+
+vector<int> findRepeatAndMiss(int arr[], int n)
+{
+    // brute -- o(n^2) -- S.C = o(1)
+    // vector<int> ans;
+    // for (int i = 1; i <= n; i++)
+    // {
+    //     int counter = -1;
+    //     int repeat = -1;
+    //     for (int j = 0; j < n; j++)
+    //     {
+    //         if (i == arr[j])
+    //             counter++;
+    //     }
+    //     if (counter == 1)
+    //         ans.push_back(i);
+    //     else if (counter == -1)
+    //         ans.push_back(i);
+    //     if (ans.size() == 2)
+    //         break;
+    // }
+    // return ans;
+
+    // better -- o(n) -- S.c = o(n)
+    // vector<int> hsh(n + 1, 0);
+    // vector<int> ans;
+    // hashing
+    // for (int i = 0; i < n; i++)
+    //     hsh[arr[i]]++;
+    // iterating over hash arr
+    // for (int i = 1; i < hsh.size(); i++)
+    // {
+    //     if (hsh[i] == 2)
+    //         ans.push_back(i);
+    //     else if (hsh[i] == 0)
+    //         ans.push_back(i);
+    //     if (ans.size() == 2)
+    //         break;
+    // }
+    // return ans;
+
+    // optimal -- o(n) -- S.C = o(1)
+    long long sn = (n * (n + 1)) / 2;
+    long long s2n = (n * (n + 1) * (2 * n + 1)) / 6;
+    long long s = 0, s2 = 0;
+    for (int i = 0; i < n; i++)
+    {
+        s += arr[i];
+        s2 += (long long)arr[i] * (long long)arr[i];
+    }
+    long long first = s - sn;
+    long long second = s2 - s2n;
+    second = second / first;
+    long long x = (first + second) / 2;
+    long long y = second - x;
+    vector<int> ans;
+    ans.push_back((int)x);
+    ans.push_back((int)y);
+    return ans;
+}
+
+int merge(vector<int> &arr, int low, int mid, int high)
+{
+    vector<int> temp;
+    int left = low;
+    int right = mid + 1;
+    int cnt = 0;
+
+    while (left <= mid && right <= high)
+    {
+        if (arr[left] <= arr[right])
+        {
+            temp.push_back(arr[left]);
+            left++;
+        }
+        else
+        {
+            temp.push_back(arr[right]);
+            cnt += (mid - left + 1);
+            right++;
+        }
+    }
+
+    while (left <= mid)
+    {
+        temp.push_back(arr[left]);
+        left++;
+    }
+    while (right <= high)
+    {
+        temp.push_back(arr[right]);
+        right++;
+    }
+
+    // transfering all elements from temporary to arr
+    for (int i = low; i <= high; i++)
+    {
+        arr[i] = temp[i - low];
+    }
+
+    return cnt;
+}
+
+int mergeSort(vector<int> &arr, int low, int high)
+{
+    int cnt = 0;
+    if (low >= high)
+        return cnt;
+    int mid = (low + high) / 2;
+    cnt += mergeSort(arr, low, mid);
+    cnt += mergeSort(arr, mid + 1, high);
+    cnt += merge(arr, low, mid, high);
+    return cnt;
+}
+
+int countInversion(int arr[], int n)
+{
+    // brute -- o(n^2)
+    // int count = 0;
+    // for (int i = 0; i < n; i++)
+    // {
+    //     for (int j = i + 1; j < n; j++)
+    //     {
+    //         if (arr[i] > arr[j])
+    //             count++;
+    //     }
+    // }
+    // return count;
+
+    // optimal -- o(nlogn) -- S.C = o(n) using merge sort algo
+    vector<int> v;
+    for (int i = 0; i < n; i++)
+        v.push_back(arr[i]);
+    return mergeSort(v, 0, n - 1);
+}
+
+int reversePairs(int arr[], int n)
+{
+    // brute -- o(n^2)
+    int count = 0;
+    for (int i = n - 1; i >= 0; i--)
+    {
+        for (int j = i - 1; j >= 0; j--)
+        {
+            if (arr[j] > 2 * arr[i])
+                count++;
+        }
+    }
+
+    return count;
+}
+
+int maxProduct(int arr[], int n)
+{
+    // brute -- o(n^2)
+    // int maxi = INT_MIN;
+    // for (int i = 0; i < n; i++)
+    // {
+    //     int pr = 1;
+    //     for (int j = i; j < n; j++)
+    //     {
+    //         pr *= arr[j];
+    //         maxi = max(maxi, pr);
+    //     }
+    //   }
+    // return maxi;
+
+    // optimal -- o(n)
+    int pre = 1;
+    int suf = 1;
+    int maxi = INT_MIN;
+    for (int i = 0; i < n; i++)
+    {
+        if (pre == 0)
+            pre = 1;
+        if (suf == 0)
+            suf = 1;
+        pre *= arr[i];
+        suf *= arr[n - i - 1];
+        maxi = max(maxi, max(pre, suf));
+    }
+
+    return maxi;
+}
+
 int main()
 {
     // ====================================================================================
@@ -372,6 +617,47 @@ int main()
     //         cout<<ans[i][j]<<" ";
     //     }
     // }
+
+    // ====================================================================================
+    // merge sorted arrays
+    // int arr[] = {1, 3, 5, 7};
+    // int brr[] = {0, 2, 6, 8, 9};
+    // int n1 = 4;
+    // int n2 = 5;
+    // mergeArr(arr, brr, n1, n2);
+    // for (int i = 0; i < n1; i++)
+    //     cout << arr[i] << " ";
+    // cout << endl;
+    // for (int j = 0; j < n2; j++)
+    //     cout << brr[j] << " ";
+
+    // ====================================================================================
+    // find missing and repeating element in an array
+    // int arr[] = {4, 3, 6, 2, 1, 1};
+    // int n = 6;
+    // vector<int> ans = findRepeatAndMiss(arr, n);
+    // cout << "repeating el : " << ans[0] << " missing el : " << ans[1] << endl;
+
+    // ====================================================================================
+    // count inversions in an array
+    // int arr[] = {5, 3, 2, 4, 1};
+    // int n = 5;
+    // int ans = countInversion(arr, n);
+    // cout << "ans : " << ans << endl;
+
+    // ====================================================================================
+    // reverse pairs in an aray
+    // int arr[] = {1, 3, 2, 3, 1};
+    // int n = 5;
+    // int ans = reversePairs(arr, n);
+    // cout << "ans : " << ans << endl;
+
+    // ====================================================================================
+    // maximum product  subarray
+    // int arr[] = {2, 3, -2, 4};
+    // int n = 4;
+    // int ans = maxProduct(arr, n);
+    // cout << "ans :" << ans << endl;
 
     return 0;
 }
